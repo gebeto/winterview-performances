@@ -101,12 +101,7 @@ class AST(object):
 		start_space = "    "
 		space = start_space * deep
 		body = space + space.join([self.proc(item, deep + 1) for item in ast["body"]])
-		return "{\n" + body + "\n" + (start_space * (deep - 1)) + "}" + ("\n\n" if deep == 1 else "")
-		# return ("{\n" + "{}\n" + "{}" + "}" + "{}").format(
-		# 	body,
-		# 	(start_space * (deep - 1)),
-		# 	("\n\n" if deep == 1 else "")
-		# )
+		return "{\n" + body + "\n" + (start_space * (deep - 1)) + "}" + ("\n\n" if deep == 1 else "\n")
 
 	def type_IfStatement(self, ast, deep):
 		return "\n" + ("    " * (deep - 1)) + "if ({_test}) {_consequent}".format(

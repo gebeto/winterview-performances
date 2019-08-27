@@ -1,121 +1,4 @@
-ast = {
-	"type": "BlockStatement",
-	"body": [
-		{
-			"type": "ExpressionStatement",
-			"expression": {
-				"type": "AssignmentExpression",
-				"operator": "=",
-				"left": {
-					"type": "MemberExpression",
-					"computed": False,
-					"object": {
-						"type": "Identifier",
-						"name": "module"
-					},
-					"property": {
-						"type": "Identifier",
-						"name": "exports"
-					}
-				},
-				"right": {
-					"type": "Identifier",
-					"name": "test"
-				}
-			}
-		},
-		{
-			"type": "ExpressionStatement",
-			"expression": {
-				"type": "AssignmentExpression",
-				"operator": "=",
-				"left": {
-					"type": "MemberExpression",
-					"computed": False,
-					"object": {
-						"type": "Identifier",
-						"name": "module"
-					},
-					"property": {
-						"type": "Identifier",
-						"name": "exports"
-					}
-				},
-				"right": {
-					"type": "Identifier",
-					"name": "test2"
-				}
-			}
-		},
-
-		{
-			"type": "VariableDeclaration",
-			"declarations": [
-				{
-					"type": "VariableDeclarator",
-					"id": {
-						"type": "Identifier",
-						"name": "a"
-					},
-					"init": {
-						"type": "Literal",
-						"value": 10,
-						"raw": "10"
-					}
-				}
-			],
-			"kind": "const"
-		},
-
-		{
-			"type": "BlockStatement",
-			"body": [
-				{
-					"type": "VariableDeclaration",
-					"declarations": [
-						{
-							"type": "VariableDeclarator",
-							"id": {
-								"type": "Identifier",
-								"name": "a"
-							},
-							"init": {
-								"type": "Literal",
-								"value": 10,
-								"raw": "10"
-							}
-						}
-					],
-					"kind": "const"
-				},
-			]
-		},
-
-		{
-			"type": "BlockStatement",
-			"body": [
-				{
-					"type": "VariableDeclaration",
-					"declarations": [
-						{
-							"type": "VariableDeclarator",
-							"id": {
-								"type": "Identifier",
-								"name": "a"
-							},
-							"init": {
-								"type": "Literal",
-								"value": 10,
-								"raw": "10"
-							}
-						}
-					],
-					"kind": "const"
-				},
-			]
-		}
-	]
-}
+import json
 
 
 class AST(object):
@@ -154,10 +37,16 @@ class AST(object):
 		)
 
 
+	def type_ReturnStatement(self, ast, deep):
+		return "return {};".format(
+			self.proc(ast["argument"], deep)
+		)
+
+
 	def type_AssignmentExpression(self, ast, deep):
-		operator = ast["operator"]
-		return "{} = {}".format(
+		return "{} {} {}".format(
 			self.proc(ast["left"], deep),
+			ast.get("operator", "="),
 			self.proc(ast["right"], deep),
 		)
 
@@ -169,19 +58,65 @@ class AST(object):
 
 
 	def type_MemberExpression(self, ast, deep):
-		computed = ast["computed"]
 		return "{}.{}".format(
 			self.proc(ast["object"], deep),
 			self.proc(ast["property"], deep),
 		)
 
+	def type_CallExpression(self, ast, deep):
+		return "{}({})".format(
+			self.proc(ast["callee"], deep),
+			", ".join([self.proc(arg, deep) for arg in ast["arguments"]]),
+			# "    " * (deep - 1),
+		)
+
+	def type_ArrayExpression(self, ast, deep):
+		return "[{}]".format(
+			", ".join([self.proc(el, deep) for el in ast["elements"]])
+		)
+
+	def type_BinaryExpression(self, ast, deep):
+		return "{_left} {_operator} {_right}".format(
+			_left = self.proc(ast["left"], deep),
+			_operator = ast["operator"],
+			_right = self.proc(ast["right"], deep),
+		)
 
 	def type_BlockStatement(self, ast, deep):
-		print(deep)
 		start_space = "    "
 		space = start_space * deep
 		body = space + space.join([self.proc(item, deep + 1) for item in ast["body"]])
-		return "{\n" + body + (start_space * (deep - 1)) + "}\n"
+		return "{\n" + body + "\n" + (start_space * (deep - 1)) + "}" + ("\n\n" if deep == 1 else "")
+
+
+	def type_FunctionDeclaration(self, ast, deep):
+		if ast.get("expression") == True:
+			s = "var {_identifier} = {_async}function({_params}) {_body}"
+		else:
+			s = "{_async}function {_identifier}({_params}) {_body}"
+
+		return s.format(
+			_async = "async " if ast.get("async") else "",
+			_identifier = self.proc(ast["id"], deep),
+			_params = ", ".join([self.proc(p, deep) for p in ast["params"]]),
+			_body = self.proc(ast["body"], deep),
+		)
+
+	def type_FunctionExpression(self, ast, deep):
+		s = "{_async}function({_params}) {_body}"
+		
+		return s.format(
+			_async = "async " if ast.get("async") else "",
+			_params = ", ".join([self.proc(p, deep) for p in ast["params"]]),
+			_body = self.proc(ast["body"], deep),
+		)
+
+
+	def type_Program(self, ast, deep):
+		return "".join([self.proc(b, deep) for b in ast["body"]])
+
+
+# CallExpression
 
 
 
@@ -195,5 +130,7 @@ def generate(ast):
 # 	"name": "test"
 # }))
 
+# ast = json.load(open("ast.json"))
+ast = json.load(open("__cache__/parsed.json"))
 
 print(generate(ast))

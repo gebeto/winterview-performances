@@ -87,6 +87,9 @@ class AST(object):
 			_right = self.proc(ast["right"], deep),
 		)
 
+	def type_LogicalExpression(self, ast, deep):
+		return self.type_BinaryExpression(ast, deep)
+
 	def type_UpdateExpression(self, ast, deep):
 		if ast["prefix"]:
 			s = "{_operator}{_argument}"
@@ -104,10 +107,24 @@ class AST(object):
 		return "{\n" + body + "\n" + (start_space * (deep - 1)) + "}" + ("\n\n" if deep == 1 else "\n")
 
 	def type_IfStatement(self, ast, deep):
-		return "\n" + ("    " * (deep - 1)) + "if ({_test}) {_consequent}".format(
+		space = ("    " * (deep - 1))
+		s = "if ({_test}) {_consequent}"
+		if ast.get("alternate"):
+			s += space + "else {_alternate}"
+		return "\n" + space + s.format(
 			_test = self.proc(ast["test"], deep),
 			_consequent = self.proc(ast["consequent"], deep),
+			_alternate = self.proc(ast.get("alternate"), deep) if ast.get("alternate") else None,
 		)
+
+	def type_BreakStatement(self, ast, deep):
+		return "break;"
+
+	def type_ContinueStatement(self, ast, deep):
+		return "continue;"
+
+	def type_UnaryExpression(self, ast, deep):
+		return self.type_UpdateExpression(ast, deep)
 
 	def type_ForStatement(self, ast, deep):
 		return "\n" + ("    " * (deep - 1)) + "for ({_init} {_test}; {_update}) {_body}".format(

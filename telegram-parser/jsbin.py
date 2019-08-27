@@ -1,8 +1,11 @@
 import re
+import json
 import requests
 
 import esprima
 import ast_2_js
+
+requests = requests.Session()
 
 
 url_regex = re.compile(r"https:\/\/jsbin\.com\/[\w\W]+?\/")
@@ -25,6 +28,7 @@ def parse_jsbin(url):
 
 def prepare_javascript(javascript):
 	parsed = esprima.toDict(esprima.parse(javascript))
+	json.dump(parsed, open("ast.json", "w"), indent=4)
 	parsed["body"] = [item for item in parsed["body"] if item["type"] != "ExpressionStatement"]
 	script = ast_2_js.generate(parsed).strip()
 	return script

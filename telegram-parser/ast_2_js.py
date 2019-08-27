@@ -16,6 +16,8 @@ class AST(object):
 		key = "type_{}".format(ast["type"])
 		if hasattr(self, key):
 			return getattr(self, key)
+
+		print(ast)
 		raise Exception("Type {} not found.".format(ast["type"]))
 
 
@@ -28,7 +30,7 @@ class AST(object):
 
 	def type_VariableDeclaration(self, ast, deep):
 		declarations = ", ".join([self.proc(item, deep) for item in ast["declarations"]])
-		return "{} {};\n".format(ast["kind"], declarations)
+		return "{} {};".format(ast["kind"], declarations)
 
 	def type_VariableDeclarator(self, ast, deep):
 		return "{} = {}".format(
@@ -58,7 +60,11 @@ class AST(object):
 
 
 	def type_MemberExpression(self, ast, deep):
-		return "{}.{}".format(
+		if ast["computed"]:
+			s = "{}[{}]"
+		else:
+			s = "{}.{}"
+		return s.format(
 			self.proc(ast["object"], deep),
 			self.proc(ast["property"], deep),
 		)
@@ -67,7 +73,6 @@ class AST(object):
 		return "{}({})".format(
 			self.proc(ast["callee"], deep),
 			", ".join([self.proc(arg, deep) for arg in ast["arguments"]]),
-			# "    " * (deep - 1),
 		)
 
 	def type_ArrayExpression(self, ast, deep):
@@ -82,11 +87,43 @@ class AST(object):
 			_right = self.proc(ast["right"], deep),
 		)
 
+	def type_UpdateExpression(self, ast, deep):
+		if ast["prefix"]:
+			s = "{_operator}{_argument}"
+		else:
+			s = "{_argument}{_operator}"
+		return s.format(
+			_argument = self.proc(ast["argument"], deep),
+			_operator = ast["operator"],
+		)
+
 	def type_BlockStatement(self, ast, deep):
 		start_space = "    "
 		space = start_space * deep
 		body = space + space.join([self.proc(item, deep + 1) for item in ast["body"]])
 		return "{\n" + body + "\n" + (start_space * (deep - 1)) + "}" + ("\n\n" if deep == 1 else "")
+		# return ("{\n" + "{}\n" + "{}" + "}" + "{}").format(
+		# 	body,
+		# 	(start_space * (deep - 1)),
+		# 	("\n\n" if deep == 1 else "")
+		# )
+
+	def type_IfStatement(self, ast, deep):
+		return "\n" + ("    " * (deep - 1)) + "if ({_test}) {_consequent}".format(
+			_test = self.proc(ast["test"], deep),
+			_consequent = self.proc(ast["consequent"], deep),
+		)
+
+	def type_ForStatement(self, ast, deep):
+		return "\n" + ("    " * (deep - 1)) + "for ({_init} {_test}; {_update}) {_body}".format(
+			_init = self.proc(ast["init"], deep),
+			_test = self.proc(ast["test"], deep),
+			_update = self.proc(ast["update"], deep),
+			_body = self.proc(ast["body"], deep),
+		)
+
+	def type_EmptyStatement(self, ast, deep):
+		return "\n"
 
 
 	def type_FunctionDeclaration(self, ast, deep):
@@ -111,12 +148,19 @@ class AST(object):
 			_body = self.proc(ast["body"], deep),
 		)
 
+	def type_ArrowFunctionExpression(self, ast, deep):
+		s = "{_async}({_params}) => {_body}"
+		
+		return s.format(
+			_async = "async " if ast.get("async") else "",
+			_params = ", ".join([self.proc(p, deep) for p in ast["params"]]),
+			_body = self.proc(ast["body"], deep),
+		)
 
 	def type_Program(self, ast, deep):
-		return "".join([self.proc(b, deep) for b in ast["body"]])
+		return "\n\n".join([self.proc(b, deep) for b in ast["body"]])
 
 
-# CallExpression
 
 
 
@@ -131,6 +175,6 @@ def generate(ast):
 # }))
 
 # ast = json.load(open("ast.json"))
-ast = json.load(open("__cache__/parsed.json"))
+# ast = json.load(open("__cache__/parsed.json"))
 
-print(generate(ast))
+# print(generate(ast))

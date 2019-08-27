@@ -1,9 +1,11 @@
 certifi==2019.6.16
 chardet==3.0.4
 EditorConfig==0.12.2
+esprima==4.0.1
 idna==2.8
 pyaes==1.6.1
 pyasn1==0.4.6
+pyjsparser==2.7.1
 requests==2.22.0
 rsa==4.0
 six==1.12.0

@@ -1,0 +1,178 @@
+{
+  "type": "Program",
+  "body": [
+    {
+      "type": "FunctionDeclaration",
+      "id": {
+        "type": "Identifier",
+        "name": "maxGoods"
+      },
+      "params": [
+        {
+          "type": "Identifier",
+          "name": "prices"
+        },
+        {
+          "type": "Identifier",
+          "name": "money"
+        }
+      ],
+      "body": {
+        "type": "BlockStatement",
+        "body": [
+          {
+            "type": "ReturnStatement",
+            "argument": {
+              "type": "MemberExpression",
+              "computed": false,
+              "object": {
+                "type": "CallExpression",
+                "callee": {
+                  "type": "MemberExpression",
+                  "computed": false,
+                  "object": {
+                    "type": "CallExpression",
+                    "callee": {
+                      "type": "MemberExpression",
+                      "computed": false,
+                      "object": {
+                        "type": "Identifier",
+                        "name": "prices"
+                      },
+                      "property": {
+                        "type": "Identifier",
+                        "name": "sort"
+                      }
+                    },
+                    "arguments": [
+                      {
+                        "type": "FunctionExpression",
+                        "id": null,
+                        "params": [
+                          {
+                            "type": "Identifier",
+                            "name": "a"
+                          },
+                          {
+                            "type": "Identifier",
+                            "name": "b"
+                          }
+                        ],
+                        "body": {
+                          "type": "BlockStatement",
+                          "body": [
+                            {
+                              "type": "ReturnStatement",
+                              "argument": {
+                                "type": "BinaryExpression",
+                                "operator": "-",
+                                "left": {
+                                  "type": "Identifier",
+                                  "name": "a"
+                                },
+                                "right": {
+                                  "type": "Identifier",
+                                  "name": "b"
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "generator": false,
+                        "expression": false,
+                        "async": false
+                      }
+                    ]
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "name": "filter"
+                  }
+                },
+                "arguments": [
+                  {
+                    "type": "FunctionExpression",
+                    "id": null,
+                    "params": [
+                      {
+                        "type": "Identifier",
+                        "name": "item"
+                      },
+                      {
+                        "type": "Identifier",
+                        "name": "index"
+                      }
+                    ],
+                    "body": {
+                      "type": "BlockStatement",
+                      "body": [
+                        {
+                          "type": "ReturnStatement",
+                          "argument": {
+                            "type": "BinaryExpression",
+                            "operator": ">=",
+                            "left": {
+                              "type": "AssignmentExpression",
+                              "operator": "-=",
+                              "left": {
+                                "type": "Identifier",
+                                "name": "money"
+                              },
+                              "right": {
+                                "type": "Identifier",
+                                "name": "item"
+                              }
+                            },
+                            "right": {
+                              "type": "Literal",
+                              "value": 0,
+                              "raw": "0"
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "generator": false,
+                    "expression": false,
+                    "async": false
+                  }
+                ]
+              },
+              "property": {
+                "type": "Identifier",
+                "name": "length"
+              }
+            }
+          }
+        ]
+      },
+      "generator": false,
+      "expression": false,
+      "async": false
+    },
+    {
+      "type": "ExpressionStatement",
+      "expression": {
+        "type": "AssignmentExpression",
+        "operator": "=",
+        "left": {
+          "type": "MemberExpression",
+          "computed": false,
+          "object": {
+            "type": "Identifier",
+            "name": "module"
+          },
+          "property": {
+            "type": "Identifier",
+            "name": "exports"
+          }
+        },
+        "right": {
+          "type": "Identifier",
+          "name": "maxGoods"
+        }
+      }
+    }
+  ],
+  "sourceType": "script"
+}

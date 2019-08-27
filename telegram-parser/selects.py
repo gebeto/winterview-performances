@@ -7,6 +7,7 @@ import jsbin
 @utils.cached("posts.json")
 def select_all_posts(messages):
 	posts = [{
+		"message_id": m.id,
 		"message": m.message,
 		"date": m.date.toordinal(),
 	} for m in messages
@@ -25,6 +26,7 @@ def select_all_jsbin_messages(messages, members):
 		reged = jsbin.url_regex.findall(message.message)
 		for reg in reged:
 			result.append({
+				"message_id": message.id,
 				"user_id": message.from_id,
 				"date": message.date.toordinal(),
 				"reply_to": message.reply_to_msg_id if hasattr(message, "reply_to_msg_id") else None,

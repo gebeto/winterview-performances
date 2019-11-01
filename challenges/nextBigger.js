@@ -1,9 +1,11 @@
 const { expect } = require('../utils');
 
 function nextBigger(solution) {
-	// expect(solution(1234567890), 1234567908);
-	expect(solution(1111), -1);
-	expect(solution(1112), 1121);
+	expect(solution(12), 21)
+	expect(solution(2017), 2071)
+	expect(solution(513), 531)
+	expect(solution(144), 414)
+	// expect(solution(123456789), 123456798)
 }
 
 nextBigger.iterationsCount = 100000;

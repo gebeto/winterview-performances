@@ -60,7 +60,7 @@ function findBiggerThen(arr, biggerThen, start, end) {
 }
 
 exports.nextBigger = function nextBigger(number) {
-  console.log(number);
+  // console.log(number);
   const arr = number.toString().split("");
   const arrl = arr.length;
   for (let i = arr.length - 1; i > 0; i--) {

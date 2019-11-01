@@ -30,20 +30,46 @@ exports.short = function short(arr) {
 }
 
 
+
+
+
+
+// Next bigger
+function swap(arr, i, j) {
+  const tmp = arr[i];
+  arr[i] = arr[j];
+  arr[j] = tmp;
+}
+
+function bubbleSort(arr, start, end) {
+  for (let i = start; i < end; i++) {
+    for (let j = i; j < end; j++) {
+      if (arr[i] > arr[j]) swap(arr, i, j);
+    }
+  }
+}
+
+function findBiggerThen(arr, biggerThen, start, end) {
+  let res = start;
+  for (let i = start; i < end; i++) {
+    if (arr[i] > biggerThen && arr[res] > arr[i]) {
+      res = i;
+    }
+  }
+  return res;
+}
+
 exports.nextBigger = function nextBigger(number) {
+  console.log(number);
   const arr = number.toString().split("");
+  const arrl = arr.length;
   for (let i = arr.length - 1; i > 0; i--) {
     if (arr[i-1] < arr[i]) {
-      for (let j = arr.length - 1; j > i-1; j--) {
-        if (arr[j] < arr[j-1]) continue;
-        var tmp = arr[j];
-        arr[j] = arr[j - 1];
-        arr[j - 1] = tmp;
-      }
+      const biggerIndex = findBiggerThen(arr, arr[i-1], i, arrl);
+      swap(arr, biggerIndex, i - 1);
+      bubbleSort(arr, i, arrl);
       return parseInt(arr.join(""))
     }
   }
   return -1;
 }
-
-console.log(nextBigger(11173714351))

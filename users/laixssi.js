@@ -32,3 +32,43 @@ exports.short = arr => {
   });
   return result.join(",");
 };
+
+
+
+
+//Найти следущее по возрастанию число из тех же цифр. 1234 -> 1243
+
+exports.nextBigger = function nextBigger(num) {
+  const arrNum = allPermutations(num);
+  const mappedArrNum = arrNum
+  .map(number => parseInt(number, 10))
+  .filter( number => number >= num)
+  .sort( (a,b) => a-b)
+ 
+  let nextBiggerNum;
+ for (let i = 0; i < mappedArrNum.length; i++) {
+    if (mappedArrNum[i] === num) {
+      nextBiggerNum = mappedArrNum[i + 1] ? mappedArrNum[i + 1] : -1;
+      break;
+    }
+  };
+  return nextBiggerNum;
+}
+
+function allPermutations(num) {
+  const result = [];
+  const stringNum = num.toString();
+
+  if (stringNum.length === 1) return [stringNum];
+  for (let i = 0; i < stringNum.length; i++) {
+    const firstChar = stringNum[i];
+
+    const remainingStr = stringNum.substr(0, i) + stringNum.substr(i + 1);
+
+    const remainingChars = allPermutations(remainingStr);
+    for (let j = 0; j < remainingChars.length; j++) {
+      result.push(firstChar + remainingChars[j]);
+    }
+  }
+  return result.filter((value, index) => result.indexOf(value) === index);
+}
